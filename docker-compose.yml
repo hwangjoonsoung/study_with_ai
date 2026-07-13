@@ -1,0 +1,10 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports: ["8080:80"]
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  app-a:
+    image: traefik/whoami
+  app-b:
+    image: traefik/whoami
