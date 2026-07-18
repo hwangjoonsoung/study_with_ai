@@ -54,37 +54,54 @@ docker exec nginx-lab2 nginx -s reload
 ### 📝 브레이크 실험 기록
 
 **실험 1: 세미콜론 누락**
-- 예상:
+- 예상: 
+  - 잘못된 부분 찾아서 어느 라인에 뭐가 잘못됬는지 확인 할 수 있도록 나타내 준다.
 
 - 실제 결과:
+  - 예상한대로 index index.html;에서 ;를 빼고 nginx -t로 태스트 해본 결과  configuration file test filed 라는 안내를 받음.
 
 - 배운 점:
+  - 환경설정 파일을 수정한 다음 nginx -t로 오류가 발생한 부분이 없는지 test를 한번 진행해 보고 nginx -s reload를 진행하면 좋음.
 
 **실험 2: 잘못된 설정으로 reload**
 - 예상:
+  - 잘못된 부분이 있으니 당연히 reload불가
 
 - 실제 결과:
+  - 예상한 대로 당연히 reload는 불가 하며 동시에 어디가 잘못됬는지 확인 알려준다.
 
 - 배운 점:
+  - 없음
 
 **실험 3: 잘못된 설정으로 restart**
 - 예상:
+  - restart 불가능
 
 - 실제 결과:
+  - restart 불가능
 
 - 배운 점:
+  - Reload와는 다르게 환경설정 파일중 어느 부분이 잘못되었는지 알려주지 않는다.
 
 ## 저널 질문
 
 **Q1. `reload`와 `restart`의 차이는? 프로덕션에서 왜 reload를 써야 하는가?**
 
 ### ✍️ 나의 답변
-
+- 궁극적으로 보면 재시작 하는 기능은 다를게 없다. 하지만 reload의 경우 nginx에서 제공하는 test를 먼저 진행하고 이상이 없으면 restart를 진행하지만 restart의 경우 별도의 test를 진행하지 않는다.
 
 **Q2. 기본 이미지의 nginx.conf에서 `include /etc/nginx/conf.d/*.conf;`는 어느 컨텍스트 안에 있는가? 왜 거기 있어야 하는가?**
 
 ### ✍️ 나의 답변
-
+- http context에 위치 해야 한다. 왜일까? http 관련 부분만 설정하기 위해서 http context에 위치한다고 생각하는데. 그렇다면 default.conf에 뭐가 들어가 있는지 본다면 다음과 같다. 
+- server Context가 들어 있다. 이 뜻을 보면 결국 계층 nginx.conf의 context 계층구조가 다음과 같이 있기 때문이다.
+- main (Global)           # 프로세스 권한, 로그 위치 등
+  ├── events              # 비동기 이벤트 처리 방식 설정
+  └── http                # 웹 서버/리버스 프록시 설정 시작
+      ├── upstream        # 백엔드 서버 그룹 (로드밸런싱 등)
+      └── server          # 가상 호스트 설정
+      └── location    # URL 경로에 따른 처리 방식 지정
+- 결국 *.conf를 하는데 default.conf가 각 server 별로 분리되는 구조로 만들고 nginx.conf에서 해당 conf파일들을 include 하는 구조로 동작한다는 의미다. 
 
 ## 오늘의 한 줄 요약
->
+> 이렇게 공부 하는게 맞나 싶다. 뭔가 그냥 대충하는것같아...
