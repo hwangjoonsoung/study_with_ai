@@ -27,6 +27,18 @@ target/
 .gradle/
 !gradle/wrapper/gradle-wrapper.jar
 
+# Spring Boot
+HELP.md
+!**/src/main/**/build/
+!**/src/test/**/build/
+!**/src/main/**/out/
+!**/src/test/**/out/
+### STS ###
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache/
+
 # Logs
 *.log
 logs/
